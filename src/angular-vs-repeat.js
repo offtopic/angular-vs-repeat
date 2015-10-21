@@ -137,10 +137,11 @@
                 var ngRepeatChild = $element.children().eq(0),
                     ngRepeatExpression = ngRepeatChild.attr('ng-repeat') || ngRepeatChild.attr('data-ng-repeat'),
                     childCloneHtml = ngRepeatChild[0].outerHTML,
-                    expressionMatches = /^\s*(\S+)\s+in\s+([\S\s]+?)(track\s+by\s+\S+)?$/.exec(ngRepeatExpression),
+                    expressionMatches = /^\s*(\S+)\s+in\s+([\S\s]+?)(as\s+(\S+)\s+)?(track\s+by\s+\S+)?$/.exec(ngRepeatExpression),
                     lhs = expressionMatches[1],
                     rhs = expressionMatches[2],
-                    rhsSuffix = expressionMatches[3],
+                    collectionAlias = expressionMatches[4],
+                    rhsSuffix = expressionMatches[5],
                     collectionName = '$vs_collection',
                     attributesDictionary = {
                         'vsRepeat': 'elementSize',
@@ -218,6 +219,9 @@
                         $scope.$watchCollection(rhs, function(coll) {
                             originalCollection = coll || [];
                             refresh();
+                            if (collectionAlias) {
+                                $scope.$parent[collectionAlias] = originalCollection;
+                            }
                         });
 
                         function refresh(event, data) {
